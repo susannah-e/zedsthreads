@@ -1,25 +1,6 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <title>My First Flask Website</title>
-  <link href="/static/style.css" rel="stylesheet" type="text/css">
-</head>
-<body>
-  <h1>Hello, World!</h1>
-  <p>
-    Welcome to your first Flask website
-  </p>
-  <table>
-    <tbody>
-      {% for clothing in clothing %}
-      <tr>
-        <td>{{ clothing[0] }}</td>
-        <td>{{ clothing[1] }}</td>
-        <td>{{ clothing[2] }}</td>
-        <td>{{ clothing[3] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block pageheading %}welcome{% endblock %}
+
+{% block main %}
+{% endblock %}

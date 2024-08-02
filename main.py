@@ -16,7 +16,11 @@ def create_connection(db_file):
     return None
 
 @app.route('/')
-def index():
+def render_homepage():
+  return render_template('index.html')
+
+@app.route('/database.html')
+def render_database():
     con = create_connection(DATABASE)
     if con:
         query = "SELECT name, main_colours, price, clothing_catergory FROM clothing_data"
@@ -28,7 +32,7 @@ def index():
         for clothing in clothing_list:
             print(clothing[3])
             print(clothing)
-        return render_template('index.html', clothing=clothing_list)
+        return render_template('database.html', clothing=clothing_list)
     else:
         return "Error"
 
