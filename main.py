@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, request
 import sqlite3
 from sqlite3 import Error
 
@@ -35,6 +35,43 @@ def render_database():
         return render_template('database.html', clothing=clothing_list)
     else:
         return "Error"
+
+
+@app.route('/login.html', methods = ['POST', 'GET'])
+def login():
+  return render_template('login.html')
+        
+@app.route('/signup.html', methods = ['POST', 'GET'])
+def render_signup_page():
+  if request.method == 'POST':
+    print(request.form)
+    fname = request.form.get('fname').title().strip()
+    lname = request.form.get('lname').title().strip()
+    email = request.form.get('email').lower().strip()
+    password = request.form.get('password')
+    password2 = request.form.get('password2')
+
+    if password != password2:
+      return redirect("/signup?error=Passwords+do+not+match")
+
+    if len(password) < 8:
+      return redirect("/signup?error=Password+must+be+at+least+8+characters")
+
+    con = create_connection(DATABASE)
+    query = "INSERT INTO user(fname, lname, email, password) VALUES(?, ?, ?, ?)"
+    cur = con.cursor()
+
+    try:
+      cur.execute(query, (fname, lname, email, password)) #this line actually executes the query
+    except sqlite3.IntegrityError:
+      con.close()
+      return redirect('/signup?error=Email+is+already+used')
+
+    con.commit()  
+    con.close()
+
+    #return redirect("/login")
+  return render_template('signup.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8080)
