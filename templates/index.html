@@ -2,5 +2,35 @@
 
 {% block pageheading %}welcome{% endblock %}
 
+
 {% block main %}
+
+<!-- this video code is from chatgpt -->
+<div class="video-container">
+  <video autoplay loop muted playsinline style="width: 100%; height: auto;" >
+    <source src="static/beachvid.mp4" type="video/mp4">
+  </video>
+  <img src="static/images/logo.png" class="overlay-image" alt="Overlay Image">
+</div>
+
+<div class="content-container left-layout">
+  <div class="content">
+    <img src="static/images/clohtes.jpg" class="side-image" alt="Side Image">
+    <div class="text-container">
+      <h2 class="header">Latest arrivals</h2>
+      <p class="side-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In suscipit nibh in risus sodales ultricies. Morbi euismod eros tincidunt elit finibus, et accumsan ante porttitor. Praesent consequat.</p>
+    </div>
+  </div>
+</div>
+
+<div class="content-container right-layout">
+  <div class="content">
+    <div class="text-container">
+      <h2 class="header">Summer deals</h2>
+      <p class="side-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In suscipit nibh in risus sodales ultricies. Morbi euismod eros tincidunt elit finibus, et accumsan ante porttitor. Praesent consequat.</p>
+    </div>
+    <img src="static/images/cloth.jpeg" class="side-image" alt="Side Image">
+  </div>
+</div>
+
 {% endblock %}

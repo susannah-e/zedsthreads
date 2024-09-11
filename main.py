@@ -36,13 +36,14 @@ def render_database():
     else:
         return "Error"
 
-
 @app.route('/login.html', methods = ['POST', 'GET'])
 def login():
   return render_template('login.html')
         
 @app.route('/signup.html', methods = ['POST', 'GET'])
 def render_signup_page():
+  con = create_connection(DATABASE)
+  cur = con.cursor()
   if request.method == 'POST':
     print(request.form)
     fname = request.form.get('fname').title().strip()
@@ -56,10 +57,7 @@ def render_signup_page():
 
     if len(password) < 8:
       return redirect("/signup?error=Password+must+be+at+least+8+characters")
-
-    con = create_connection(DATABASE)
     query = "INSERT INTO user(fname, lname, email, password) VALUES(?, ?, ?, ?)"
-    cur = con.cursor()
 
     try:
       cur.execute(query, (fname, lname, email, password)) #this line actually executes the query
@@ -72,6 +70,8 @@ def render_signup_page():
 
     #return redirect("/login")
   return render_template('signup.html')
+
+    
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=8080)
