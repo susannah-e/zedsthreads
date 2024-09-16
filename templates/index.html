@@ -2,35 +2,42 @@
 
 {% block pageheading %}welcome{% endblock %}
 
-
 {% block main %}
 
-<!-- this video code is from chatgpt -->
+<!-- Video section -->
 <div class="video-container">
-  <video autoplay loop muted playsinline style="width: 100%; height: auto;" >
+  <video autoplay loop muted playsinline style="width: 100%; height: auto;">
     <source src="static/beachvid.mp4" type="video/mp4">
   </video>
   <img src="static/images/logo.png" class="overlay-image" alt="Overlay Image">
 </div>
 
-<div class="content-container left-layout">
-  <div class="content">
+<!-- Content sections -->
+<div class="content-wrapper">
+  <div class="content-box left-layout">
     <img src="static/images/clohtes.jpg" class="side-image" alt="Side Image">
     <div class="text-container">
       <h2 class="header">Latest arrivals</h2>
-      <p class="side-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In suscipit nibh in risus sodales ultricies. Morbi euismod eros tincidunt elit finibus, et accumsan ante porttitor. Praesent consequat.</p>
+      <p class="side-text">Text beside the image on the right. This is the content description. Text beside the image on the right. This is the content description.</p>
     </div>
   </div>
-</div>
 
-<div class="content-container right-layout">
-  <div class="content">
+  <div class="content-box right-layout">
     <div class="text-container">
-      <h2 class="header">Summer deals</h2>
-      <p class="side-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. In suscipit nibh in risus sodales ultricies. Morbi euismod eros tincidunt elit finibus, et accumsan ante porttitor. Praesent consequat.</p>
+      <h2 class="header">Step into summer</h2>
+      <p class="side-text">Text beside the image on the left. This is another content description. Text beside the image on the left. This is another content description.</p>
     </div>
     <img src="static/images/cloth.jpeg" class="side-image" alt="Side Image">
   </div>
-</div>
+  
+  <div class="content-box left-layout"> <!-- Changed from content-wrapper to content-box -->
+    <img src="static/images/clohtes.jpg" class="side-image" alt="Side Image">
+    <div class="text-container">
+      <h2 class="header">Sales + Deals</h2>
+      <p class="side-text">Text beside the image on the right. This is the content description. Text beside the image on the right. This is the content description.</p>
+    </div>
+  </div>
+
+</div> <!-- Closing content-wrapper -->
 
 {% endblock %}

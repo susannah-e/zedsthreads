@@ -1,9 +1,10 @@
 nav {
+  font-family: 'Nunito', sans-serif;
   background-color: rgba(255, 207, 221);
   text-align: left;
   font-size: 1.5rem;
-  padding-top: 0.4rem;
   padding-bottom: 0.7rem;
+  padding-top: 0.7rem;
   padding-left: 0.5rem;
   color: rgba(252, 252, 252);
 }
@@ -13,73 +14,77 @@ nav {
   padding-right: 0.5rem;
 }
 
-/*chat gpt code */
-.video-container {
-  position: relative;
-  display: inline-block;
-  width: 100%; /* Adjust the width as needed */
+.nunito-<font> {
+  font-family: "Nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
 }
 
-/*chat gpt code */
+
+/* Center the video container */
+.video-container {
+  position: relative;
+  width: 100%;
+  text-align: center; /* Center the video */
+}
+
+/* Styles for the overlay image */
 .overlay-image {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: flex; /* Adjust the size of the image */
+  width: 400px; /* Adjust size as needed */
   height: auto;
 }
 
+/* Wrapper for content boxes */
+.content-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack content boxes vertically */
+  align-items: center; /* Center content boxes horizontally */
+  margin-top: 20px; /* Space above content boxes */
+}
 
-.content-container {
-  margin-top: 40px; /* Add space between video and content */
+/* Individual content box */
+.content-box {
+  font-family: 'Nunito', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center contents horizontally within the box */
+  width: 80%; /* Adjust width as needed */
+  max-width: 1200px; /* Maximum width of content box */
+  padding: 20px; /* Padding inside the box */
+  margin-bottom: 30px; /* Space between boxes */
+  border-radius: 8px; /* Optional rounded corners */
 }
 
 /* Layout for Image on the Left */
-.left-layout .content {
-  display: flex;
-  align-items: flex-start;
-  
-}
-
 .left-layout .side-image {
-  width: 300px;
+  width: 400px; /* Adjust size of the image */
   height: auto;
-  margin-left: 30px;
   margin-right: 30px; /* Space between image and text */
 }
 
 .left-layout .text-container {
+  font-family: 'Nunito', sans-serif;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stack header and text vertically */
 }
 
 /* Layout for Image on the Right */
-.right-layout .content {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between; /* Push text and image to opposite sides */
-  margin-top: 30px;
-}
-
 .right-layout .side-image {
-  width: 300px;
+  width: 400px; /* Adjust size of the image */
   height: auto;
-  margin-right: 30px;
-  margin-left: 30px; /* Space between text and image */
-}
+  margin-left: 30px; /* Space between */
 
-.right-layout .text-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.header {
-  font-size: 24px;
-  margin-bottom: 10px; /* Add space between header and text */
-}
-
-.side-text {
-  font-size: 16px;
-  line-height: 1.5;
+.footer{
+  font-family: 'Nunito', sans-serif;
+  background-color: rgba(255, 207, 221);
+  text-align: left;
+  font-size: 1.5rem;
+  padding-bottom: 0.7rem;
+  padding-left: 0.5rem;
+  color: rgba(252, 252, 252);
 }

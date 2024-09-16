@@ -1,6 +1,7 @@
-from flask import Flask, render_template, redirect, request
 import sqlite3
 from sqlite3 import Error
+
+from flask import Flask, redirect, render_template, request
 
 DATABASE = "zeds_threads.db"
 
@@ -18,23 +19,23 @@ def create_connection(db_file):
 @app.route('/')
 def render_homepage():
   return render_template('index.html')
-
-@app.route('/database.html')
+  
+@app.route('/shopnow.html')
 def render_database():
     con = create_connection(DATABASE)
     if con:
-        query = "SELECT name, main_colours, price, clothing_catergory FROM clothing_data"
+        query = "SELECT name, main_colours, price FROM clothing_data"
         cur = con.cursor()
         cur.execute(query)
         clothing_list = cur.fetchall()
         con.close()
-        print(clothing_list)
+      
         for clothing in clothing_list:
-            print(clothing[3])
-            print(clothing)
-        return render_template('database.html', clothing=clothing_list)
+            print(clothing)  
+        return render_template('shopnow.html', clothing=clothing_list)
     else:
         return "Error"
+
 
 @app.route('/login.html', methods = ['POST', 'GET'])
 def login():
@@ -69,9 +70,10 @@ def render_signup_page():
     con.close()
 
     #return redirect("/login")
-  return render_template('signup.html')
+  return redirect("/login")
+
 
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=8080)
+    app.run(host='0.0.0.0', debug=True, port=5000)

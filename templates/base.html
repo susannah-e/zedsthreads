@@ -1,24 +1,36 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Fun font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+  
   <title>Zeds Threads</title>
+  <link href="/static/styles.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <!-- Moved the nav to the body section -->
   <nav>
     <a href="/">Home</a>
-    <a href="database.html">Shop now</a>
+    <a href="shopnow.html">Shop now</a>
     <a href="about.html">about</a>
     <div class="login">
-    <a href="login.html">login</a>
+      <a href="login.html">login</a>
     </div>
   </nav>
-
   
-  <link href="/static/styles.css" rel="stylesheet" type="text/css">
-<body>
-  
-
   <main>
-      {% block main %}
-      {% endblock %}
+    {% block main %}
+    {% endblock %}
   </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer">
+      <p>© ZEDS THREADS 2024</p>
+    </div>
+  </footer>
 </body>
 </html>
