@@ -139,52 +139,56 @@ def render_acessories():
             return render_template('acessories.html', clothing=[], message="No acessories found.")
     else:
         return "Error"
-
-
-
-@app.route('/login.html', methods = ['POST', 'GET'])
+@app.route('/login.html', methods=['POST', 'GET'])
 def render_login_page():
-  con = create_connection(DATABASE)
-  if con:
-    if is_logged_in():
-      return redirect('/index')
-    print("Logging in")
-    if request.method == 'POST':
-      print(request.form)
-      email = request.form['email'].strip().lower()
-      password = request.form['password'].strip()
-      print(email)
-      query = "SELECT id, first_name, password FROM user WHERE email =?"
-  
-      cur = con.cursor()
-      cur.execute(query, (email,))
-      user_data = cur.fetchone() #only one value
-      con.close()
-      #if the given email is not in the database it will raise an error
-      if user_data is None:
-        return redirect("/login?error=Email+invalid+or+password+incorrect")
-        return render_template("/login?error=Email+invalid+or+password+incorrect")
-        
-      try:
-        user_id = user_data[0]
-        first_name = user_data[1]
-        db_password = user_data[2]
-      except IndexError:
-        return redirect("/login?error=Email+invalid+or+password+incorrect")
-  
-      if not bcrypt.check_password_hash(db_password, password):
-        return redirect(request.referrer + "?error=Email+invalid+or+password+incorrect")
-  
-      session['email'] = email
-      session['user_id'] = user_id
-      session['firstname'] = first_name
-  
-      print(session)
-      return redirect('/')
-  
-    return render_template('login.html',logged_in = is_logged_in())
-  else:
-    return "Error"
+    con = create_connection(DATABASE)
+    if con:
+        if is_logged_in():
+            first_name = session.get('firstname', 'User')
+            return redirect(f'/welcome?name={first_name}')  # Redirect to welcome page
+
+        if request.method == 'POST':
+            email = request.form['email'].strip().lower()
+            password = request.form['password'].strip()
+
+            query = "SELECT id, first_name, password FROM user WHERE email =?"
+            cur = con.cursor()
+            cur.execute(query, (email,))
+            user_data = cur.fetchone()
+
+            con.close()
+
+            if user_data is None:
+                return redirect("/login.html?error=Email+invalid+or+password+incorrect")
+
+            try:
+                user_id = user_data[0]
+                first_name = user_data[1]
+                db_password = user_data[2]
+            except IndexError:
+                return redirect("/login.html?error=Email+invalid+or+password+incorrect")
+
+            if not bcrypt.check_password_hash(db_password, password):
+                return redirect("/login.html?error=Email+invalid+or+password+incorrect")
+
+            session['email'] = email
+            session['user_id'] = user_id
+            session['firstname'] = first_name
+
+            return redirect(f'/welcome?name={first_name}')  # Redirect to welcome page
+
+        error = request.args.get('error')
+        return render_template('login.html', logged_in=is_logged_in(), error=error)
+    else:
+        return "Error connecting to the database."
+
+#chat gpt assisted me with this idea of a welcome page
+@app.route('/welcome')
+def welcome():
+    first_name = request.args.get('name', 'Guest')  # Get the first name from query parameters
+    return render_template('welcome.html', name=first_name)
+
+
 
 @app.route('/logout') #logout function
 def logout():
@@ -192,6 +196,7 @@ def logout():
   [session.pop(key) for key in list(session.keys())]
   print(list(session.keys()))
   return render_template('login.html')
+  
 
 
 @app.route('/signup', methods = ['POST', 'GET'])

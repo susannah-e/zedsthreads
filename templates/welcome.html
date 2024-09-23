@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block pageheading %}welcome{% endblock %}
+
+{% block main %}
+<!-- chat gpt assisted me in this part giving me the idea of a welcome page-->
+<h1>Welcome, {{ name }}!</h1>
+<p>You are now logged in.</p>
+<a href="/">Go to Home</a>
+<a href="/logout">logout</a>
+
+
+{% endblock %}
