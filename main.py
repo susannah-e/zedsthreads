@@ -1,12 +1,13 @@
 from flask import Flask, render_template, redirect, request
 import sqlite3
 from sqlite3 import Error
-from flask_bcrypt import bcrypt
+from flask_bcrypt import Bcrypt
 from flask import session
 
 # Create a Flask app
 app = Flask(__name__, template_folder='templates')
-
+bcrypt = Bcrypt(app)
+app.secret_key = "wegc1234"
 DATABASE = "zeds_threads.db"
 
 def create_connection(db_file):
@@ -36,91 +37,108 @@ def render_database():
         return render_template('shopnow.html', clothing=clothing_list)
     else:
         return "Error"
-
-
-@app.route('/login', methods = ['POST', 'GET'])
-def render_login_page():
-  if is_logged_in():
-    return redirect('/products/1')
-  print("Logging in")
-  if request.method == 'POST':
-    print(request.form)
-    email = request.form['email'].strip().lower()
-    password = request.form['password'].strip()
-    print(email)
-    query = "SELECT id, fname, password FROM user WHERE email =?"
-
+      
+@app.route('/outerwear.html')
+def render_outerwear():
     con = create_connection(DATABASE)
-    cur = con.cursor()
-    cur.execute(query, (email,))
-    user_data = cur.fetchone() #only one value
-    con.close()
-    #if the given email is not in the database it will raise an error
-    if user_data is None:
-      return redirect("/login?error=Email+invalid+or+password+incorrect")
-      return render_template("/login?error=Email+invalid+or+password+incorrect")
+    if con:
+        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 1"
+        cur = con.cursor()
+        cur.execute(query)
+        clothing_list = cur.fetchall()
+        con.close()
+
+        if clothing_list:
+            return render_template('outerwear.html', clothing=clothing_list)
+        else:
+            return render_template('outerwear.html', clothing=[], message="No outerwear items found.")
+    else:
+        return "Error"
 
 
-    try:
-      user_id = user_data[0]
-      first_name = user_data[1]
-      db_password = user_data[2]
-    except IndexError:
-      return redirect("/login?error=Email+invalid+or+password+incorrect")
 
-    if not bcrypt.check_password_hash(db_password, password):
-      return redirect(request.referrer + "?error=Email+invalid+or+password+incorrect")
-
-    session['email'] = email
-    session['user_id'] = user_id
-    session['firstname'] = first_name
-
-    print(session)
-    return redirect('/')
-
-  return render_template('login.html',logged_in = is_logged_in())
+@app.route('/login.html', methods = ['POST', 'GET'])
+def render_login_page():
+  con = create_connection(DATABASE)
+  if con:
+    if is_logged_in():
+      return redirect('/index')
+    print("Logging in")
+    if request.method == 'POST':
+      print(request.form)
+      email = request.form['email'].strip().lower()
+      password = request.form['password'].strip()
+      print(email)
+      query = "SELECT id, first_name, password FROM user WHERE email =?"
+  
+      cur = con.cursor()
+      cur.execute(query, (email,))
+      user_data = cur.fetchone() #only one value
+      con.close()
+      #if the given email is not in the database it will raise an error
+      if user_data is None:
+        return redirect("/login?error=Email+invalid+or+password+incorrect")
+        return render_template("/login?error=Email+invalid+or+password+incorrect")
+        
+      try:
+        user_id = user_data[0]
+        first_name = user_data[1]
+        db_password = user_data[2]
+      except IndexError:
+        return redirect("/login?error=Email+invalid+or+password+incorrect")
+  
+      if not bcrypt.check_password_hash(db_password, password):
+        return redirect(request.referrer + "?error=Email+invalid+or+password+incorrect")
+  
+      session['email'] = email
+      session['user_id'] = user_id
+      session['firstname'] = first_name
+  
+      print(session)
+      return redirect('/')
+  
+    return render_template('login.html',logged_in = is_logged_in())
+  else:
+    return "Error"
 
 @app.route('/logout') #logout function
 def logout():
   print(list(session.keys()))
   [session.pop(key) for key in list(session.keys())]
   print(list(session.keys()))
-  return redirect('/message=See+you+next+time!')
   return render_template('login.html')
 
 
 @app.route('/signup', methods = ['POST', 'GET'])
 def render_signup_page():
-  if request.method == 'POST':
-    print(request.form)
-    fname = request.form.get('fname').title().strip()
-    lname = request.form.get('lname').title().strip()
-    email = request.form.get('email').lower().strip()
-    password = request.form.get('password')
-    password2 = request.form.get('password2')
-
-    if password != password2:
-      return redirect("/signup?error=Passwords+do+not+match")
-
-    if len(password) < 8:
-      return redirect("/signup?error=Password+must+be+at+least+8+characters")
-    hashed_password = bcrypt.generate_password_hash(password)  #creating a hash password
-    print(hashed_password)  
-    con = create_connection(DATABASE)
-    query = "INSERT INTO user(fname, lname, email, password) VALUES(?, ?, ?, ?)"
-    cur = con.cursor()
-
-    try:
-      cur.execute(query, (fname, lname, email, hashed_password)) #this line actually executes the query
-    except sqlite3.IntegrityError:
+  con = create_connection(DATABASE)
+  if con:
+    if request.method == 'POST':
+      fname = request.form.get('fname')  
+      lname = request.form.get('lname')  
+      email = request.form.get('email')
+      password = request.form.get('password')
+      password2 = request.form.get('password2')
+  
+      hashed_password = bcrypt.generate_password_hash(password)  #creating a hash password
+      print(hashed_password)  
+      
+      query = "INSERT INTO user(first_name, last_name, email, password) VALUES(?, ?, ?, ?)"
+      cur = con.cursor()
+  
+      try:
+        cur.execute(query, (fname, lname, email, hashed_password)) #this line actually executes the query
+      except sqlite3.IntegrityError:
+        con.close()
+        return redirect('/signup?error=Email+is+already+used')
+  
+      con.commit()  
       con.close()
-      return redirect('/signup?error=Email+is+already+used')
-
-    con.commit()  
-    con.close()
-
-    return redirect("/login")
-  return render_template('signup.html')
+  
+      return redirect("/login.html")
+    return render_template('signup.html')
+  else:
+    return "Error"
 
 def is_logged_in():
   if session.get("email") is None:
@@ -129,6 +147,143 @@ def is_logged_in():
   else:
     print("logged in")
     return True
+    
+#admin section
+@app.route('/admin')
+def render_admin():
+  if not is_logged_in():
+    return redirect('/message=Need+to+be+logged+in.')
+  con = create_connection(DATABASE)
+  if con:
+    #fetch the categories
+    query = "SELECT * FROM clothing_category"
+    cur = con.cursor()
+    cur.execute(query)
+    category_list = cur.fetchall()
 
+    #fetch the products
+    query = "SELECT * FROM clothing_data"
+    cur.execute(query)
+    product_list = cur.fetchall()
+    print(product_list)
+
+    con.close()
+
+    if not product_list:
+      return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, no_items=True)
+    return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, products=product_list)
+
+
+#adding a category function
+@app.route('/add_category', methods = ['POST'])
+def add_category():
+  if not is_logged_in():
+    return redirect('/message=Need+to+be+logged+in.')
+  if request.method == "POST":
+    print(request.form)
+    cat_name = request.form.get('name')
+    print(cat_name)
+    con = create_connection(DATABASE)
+    if con:
+      query = "INSERT INTO clothing_category (name) VALUES (?)"
+      cur = con.cursor()
+      cur.execute(query, (cat_name, ))
+      con.commit()
+      con.close()
+    return redirect('/admin')
+
+
+#deleting a category function
+@app.route('/delete_category', methods = ['POST'])
+def render_delete_category():
+  if not is_logged_in():
+    return redirect('/message=Need+to+be+logged+in.')
+
+  if request.method == "POST":
+    con = create_connection(DATABASE)
+    if con:
+      category = request.form.get('cat_id')
+      print(category)
+      category = category.split(", ")
+      cat_id = category[0]
+      cat_name = category[1]
+      return render_template("delete_confirm.html", id=cat_id, name=cat_name, type='category')
+    return redirect("/admin")
+
+#confirmation of delete category
+@app.route('/delete_category_confirm/<int:cat_id>')
+def render_delete_category_confirm(cat_id):
+  if not is_logged_in():
+    return redirect('/message=Need+to+be+logged+in.')
+  con = create_connection(DATABASE)
+  if con:
+    query = "DELETE FROM clothing_category WHERE id = ?"
+    cur = con.cursor()
+    cur.execute(query, (cat_id, ))
+    con.commit()
+    con.close()
+    return redirect("/admin")
+
+#adding an item 
+@app.route('/add_item', methods = ['POST'])
+def render_add_item():
+  con = create_connection(DATABASE)
+  if con:
+    if not is_logged_in():
+      return redirect('/message=Need+to+be+logged+in.')
+    if request.method == "POST":
+      print(request.form)
+      item_name = request.form.get('name')
+      item_colours = request.form.get('main_colours')
+      item_price = request.form.get('price')
+
+      print(item_name, item_colours, item_price)
+      query = "INSERT INTO clothing_data (name, main_colours, price) VALUES (?, ?, ?)"
+      cur = con.cursor()
+      cur.execute(query, (item_name, item_colours, item_price))
+      con.commit()
+      con.close()
+    return redirect('/admin')
+
+
+#deleting a item function
+@app.route('/delete_item', methods=['POST'])
+def render_delete_item():
+  if not is_logged_in():
+    return redirect('/message=Need+to+be+logged+in.')
+
+  if request.method == "POST":
+    con=create_connection(DATABASE)
+    products = request.form.get('clothing_id')
+    print(products)
+    if products is None:
+      return redirect("/admin?error=No+item+selected")
+
+    products = products.split(", ")
+    item_id = products[0]
+    item_name = products[1] if len(products) > 1 else "" #assign an empty string if item_name doesn't exist
+    print(item_id, item_name)
+
+    return render_template("delete_item_confirm.html", id=item_id, name=item_name, type='products')
+  return redirect("/admin")
+
+#confirm delete item
+@app.route('/delete_item_confirm/<int:item_id>')
+def render_delete_item_confirm(item_id):
+  print("I am in here")
+  if not is_logged_in():
+    return redirect('/message=Need+to+be+logged+in.')
+
+  con=create_connection(DATABASE)
+  if con:
+    query = "DELETE FROM clothing_data WHERE id = ?"
+    cur = con.cursor()
+    cur.execute(query, (item_id, ))
+    con.commit()
+    print("Test: ", item_id)
+    con.close()  
+
+  return redirect("/admin")
+  
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=5000)
+  app.run(host='0.0.0.0', debug=True, port=8080)
