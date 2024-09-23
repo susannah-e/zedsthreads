@@ -54,6 +54,91 @@ def render_outerwear():
             return render_template('outerwear.html', clothing=[], message="No outerwear items found.")
     else:
         return "Error"
+      
+@app.route('/tops.html')
+def render_tops():
+    con = create_connection(DATABASE)
+    if con:
+        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 4"
+        cur = con.cursor()
+        cur.execute(query)
+        clothing_list = cur.fetchall()
+        con.close()
+
+        if clothing_list:
+            return render_template('tops.html', clothing=clothing_list)
+        else:
+            return render_template('tops.html', clothing=[], message="No top items found.")
+    else:
+        return "Error"
+
+@app.route('/dresses.html')
+def render_dresses():
+    con = create_connection(DATABASE)
+    if con:
+        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 2"
+        cur = con.cursor()
+        cur.execute(query)
+        clothing_list = cur.fetchall()
+        con.close()
+
+        if clothing_list:
+            return render_template('dresses.html', clothing=clothing_list)
+        else:
+            return render_template('dresses.html', clothing=[], message="No dresses found.")
+    else:
+        return "Error"
+      
+@app.route('/footwear.html')
+def render_footwear():
+    con = create_connection(DATABASE)
+    if con:
+        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 3"
+        cur = con.cursor()
+        cur.execute(query)
+        clothing_list = cur.fetchall()
+        con.close()
+
+        if clothing_list:
+            return render_template('footwear.html', clothing=clothing_list)
+        else:
+            return render_template('footwear.html', clothing=[], message="No footwear items found.")
+    else:
+        return "Error"
+      
+@app.route('/bottoms.html')
+def render_bottoms():
+    con = create_connection(DATABASE)
+    if con:
+        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 5"
+        cur = con.cursor()
+        cur.execute(query)
+        clothing_list = cur.fetchall()
+        con.close()
+
+        if clothing_list:
+            return render_template('bottoms.html', clothing=clothing_list)
+        else:
+            return render_template('bottoms.html', clothing=[], message="No bottoms found.")
+    else:
+        return "Error"
+      
+@app.route('/acessories.html')
+def render_acessories():
+    con = create_connection(DATABASE)
+    if con:
+        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 6"
+        cur = con.cursor()
+        cur.execute(query)
+        clothing_list = cur.fetchall()
+        con.close()
+
+        if clothing_list:
+            return render_template('acessories.html', clothing=clothing_list)
+        else:
+            return render_template('acessories.html', clothing=[], message="No acessories found.")
+    else:
+        return "Error"
 
 
 

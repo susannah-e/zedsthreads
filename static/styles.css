@@ -1,17 +1,96 @@
-nav {
-  font-family: 'Nunito', sans-serif;
-  background-color: rgba(255, 207, 221);
-  text-align: left;
-  font-size: 1.5rem;
-  padding-bottom: 0.7rem;
-  padding-top: 0.7rem;
-  padding-left: 0.5rem;
-  color: rgba(252, 252, 252);
+
+/** hamburger menu code from treehouse on yt **/
+.off-screen-menu {
+    background-color: rgb(255, 204, 209);
+    height: 100vh;
+    width: 100%;
+    max-width: 450px;
+    position: fixed;
+    top: 0;
+    right: -450px;
+    display: flex;
+    flex-direction: column;
+    align-items: right;    
+    justify-content: top;
+    text-align: right;
+    font-size: 3rem;
+    transition: .3s ease;
+    z-index: 100; /* Added z-index to ensure it appears above other content */
 }
-.login {
-  display: inline;
-  float: right;
-  padding-right: 0.5rem;
+.off-screen-menu.active {
+    right: 0;
+    padding-right: 50px;
+    padding-top: 80px;
+}
+.off-screen-menu a {
+    margin-bottom: 20px; /* Space between links */
+    color: white; /* Set font color to white */
+    text-decoration: none; /* No underline */
+}
+
+
+/* nav */
+nav {
+    padding: 10px;
+    display: flex;
+    background-color: rgb(255, 204, 209);
+}
+
+.ham-menu {
+  height: 50px;
+  width: 40px;
+  margin-left: auto;
+  position: relative;
+  z-index: 200; /* Ensure hamburger menu is in front of sidebar */
+}
+
+.ham-menu span {
+  height: 5px;
+  width: 100%;
+  background-color: #ff8793;
+  border-radius: 25px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: .3s ease;
+}
+
+.ham-menu span:nth-child(1) {
+  top: 25%;
+}
+
+.ham-menu span:nth-child(2) {
+  top: 50%;
+}
+
+.ham-menu span:nth-child(3) {
+  top: 75%;
+}
+
+.ham-menu.active span {
+  background-color: white; /* Color changes when active */
+}
+
+.ham-menu.active span:nth-child(1) {
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(45deg); /* Top line becomes part of X */
+}
+
+.ham-menu.active span:nth-child(2) {
+  opacity: 0; /* Middle line disappears */
+}
+
+.ham-menu.active span:nth-child(3) {
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg); /* Bottom line becomes part of X */
+}
+
+/* Style for the dropdown menu */
+.off-screen-menu ul {
+    list-style: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
 }
 
 .nunito-<font> {
@@ -27,6 +106,7 @@ nav {
   position: relative;
   width: 100%;
   text-align: center; /* Center the video */
+  z-index: 1; /* Lower z-index to ensure it's behind the menu */
 }
 
 /* Styles for the overlay image */

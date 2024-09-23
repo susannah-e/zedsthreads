@@ -11,17 +11,35 @@
 </head>
 
 <body>
+  <div class="off-screen-menu"> 
+    <ul>
+      <li><a href="/">Home</a></li>
+      <li><a href="#">About</a></li>
+      <!-- began to add a dropdown menu but gave up for now cred to Devression on yt -->
+      <li>
+          <a href="shopnow.html">Shop Now ▾</a>
+          <ul class="dropdown">
+              <li><a href="bottoms.html">Bottoms</a></li>
+              <li><a href="tops.html">Tops</a></li>
+              <li><a href="outerwear.html">Outerwear</a></li>
+              <li><a href="footwear.html">Footwear</a></li>
+              <li><a href="acessories.html">Acessories</a></li>
+              <li><a href="dresses.html">Dresses</a></li>
+          </ul>
+      </li>
+      <li><a href="login.html">Log In</a></li>
+    </ul>
+  </div>
 
   <nav>
-    <a href="/">Home</a>
-    <a href="shopnow.html">Shop now</a>
-    <a href="about.html">about</a>
-    <a href="outerwear.html">outerwer</a>
-    <div class="login">
-      <a href="login.html">login</a>
+    <!-- hamburger code from treehouse on yt -->
+    <div class="ham-menu"> 
+      <span></span>
+      <span></span>
+      <span></span>
     </div>
   </nav>
-  
+
   <main>
     {% block main %}
     {% endblock %}
@@ -33,5 +51,16 @@
       <p>© ZEDS THREADS 2024</p>
     </div>
   </footer>
+
+  <!-- JS for hamburger functionality from Treehouse on yt-->
+  <script>
+    const hamMenu = document.querySelector('.ham-menu');
+    const offScreenMenu = document.querySelector('.off-screen-menu');
+
+    hamMenu.addEventListener('click', () => {
+      hamMenu.classList.toggle('active');
+      offScreenMenu.classList.toggle('active');
+    });
+  </script>
 </body>
 </html>
