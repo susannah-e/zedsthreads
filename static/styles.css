@@ -1,3 +1,43 @@
+body {
+    background-color: #f9e7e7; 
+    font-family: 'Nunito', sans-serif; 
+}
+
+.clothing-title {
+    font-family: 'Nunito', sans-serif; /* Use Nunito font */
+    text-align: center; /* Center the title */
+    font-size: 2.5rem; /* Increase font size */
+    color: #fb6f6f; /* Text color */
+    
+}
+
+/* chat gpt code for making the website look a bit nicer */
+.clothing-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px; /* Space between boxes */
+  justify-content: center; /* Center align the items */
+  padding: 20px;
+}
+
+.clothing-item {
+  background-color: rgb(255, 204, 209); /* Pink background for the boxes */
+  font-family: 'Nunito', sans-serif;
+  border: 2px solid #333; /* Dark border */
+  border-radius: 8px; /* Rounded corners */
+  padding: 15px;
+  width: 200px; /* Width of each box */
+  text-align: center; /* Center text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* More pronounced shadow */
+  transition: transform 0.2s; /* Smooth scaling effect */
+}
+
+.clothing-item:hover {
+  transform: scale(1.05); /* Slightly scale up on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Darker shadow on hover */
+}
+
+
 
 /** hamburger menu code from treehouse on yt **/
 .off-screen-menu {
@@ -158,6 +198,7 @@ nav {
   width: 400px; /* Adjust size of the image */
   height: auto;
   margin-left: 30px; /* Space between */
+
 
 .footer{
   font-family: 'Nunito', sans-serif;

@@ -22,7 +22,7 @@ def create_connection(db_file):
 def render_homepage():
   return render_template('index.html')
 
-@app.route('/shopnow.html')
+@app.route('/shopnow')
 def render_database():
     con = create_connection(DATABASE)
     if con:
@@ -36,92 +36,39 @@ def render_database():
     else:
         return "Error"
 
-@app.route('/outerwear.html')
-def render_outerwear():
+@app.route("/clothes/<clothing_type>")
+def render_webpage(clothing_type):
+    title = clothing_type
+    category_query = "SELECT catergoryid FROM clothing_category WHERE catergory = ?"
+    item_query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = ?"
+
     con = create_connection(DATABASE)
     if con:
-        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 1"
         cur = con.cursor()
-        cur.execute(query)
-        clothing_list = cur.fetchall()
-        con.close()
 
-        return render_template('outerwear.html', clothing=clothing_list)
-    else:
-        return "Error"
+        # Fetch category ID
+        cur.execute(category_query, (clothing_type,))
+        category_result = cur.fetchone()
 
-@app.route('/tops.html')
-def render_tops():
-    con = create_connection(DATABASE)
-    if con:
-        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 4"
-        cur = con.cursor()
-        cur.execute(query)
-        clothing_list = cur.fetchall()
-        con.close()
+        if category_result:
+            cat_id = category_result[0]
 
-        return render_template('tops.html', clothing=clothing_list)
-    else:
-        return "Error"
+            # Fetch clothing items for the category
+            cur.execute(item_query, (cat_id,))
+            clothing_list = cur.fetchall()
+            con.close()
+            return render_template('clothes.html', clothing=clothing_list, title=title)
 
-@app.route('/dresses.html')
-def render_dresses():
-    con = create_connection(DATABASE)
-    if con:
-        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 2"
-        cur = con.cursor()
-        cur.execute(query)
-        clothing_list = cur.fetchall()
-        con.close()
+@app.route('/welcome')
+def welcome():
+    first_name = request.args.get('name', 'Guest') 
+    return render_template('welcome.html', name=first_name)
+    
+@app.route('/shopnow')
+def shopnow():
+    return render_template('shopnow.html')    
 
-        return render_template('dresses.html', clothing=clothing_list)
-    else:
-        return "Error"
-
-@app.route('/footwear.html')
-def render_footwear():
-    con = create_connection(DATABASE)
-    if con:
-        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 3"
-        cur = con.cursor()
-        cur.execute(query)
-        clothing_list = cur.fetchall()
-        con.close()
-
-        return render_template('footwear.html', clothing=clothing_list)
-    else:
-        return "Error"
-
-@app.route('/bottoms.html')
-def render_bottoms():
-    con = create_connection(DATABASE)
-    if con:
-        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 5"
-        cur = con.cursor()
-        cur.execute(query)
-        clothing_list = cur.fetchall()
-        con.close()
-
-        return render_template('bottoms.html', clothing=clothing_list)
-    else:
-        return "Error"
-
-@app.route('/acessories.html')
-def render_acessories():
-    con = create_connection(DATABASE)
-    if con:
-        query = "SELECT name, main_colours, price FROM clothing_data WHERE cat_id = 6"
-        cur = con.cursor()
-        cur.execute(query)
-        clothing_list = cur.fetchall()
-        con.close()
-
-        return render_template('acessories.html', clothing=clothing_list)
-    else:
-        return "Error"
-
-
-@app.route('/login.html', methods=['POST', 'GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def render_login_page():
     con = create_connection(DATABASE)
     if con:
@@ -161,12 +108,6 @@ def render_login_page():
         return render_template('login.html', logged_in=is_logged_in(), error=error)
     else:
         return "Error connecting to the database."
-
-
-@app.route('/welcome')
-def welcome():
-    first_name = request.args.get('name', 'Guest') 
-    return render_template('welcome.html', name=first_name)
 
 
 @app.route('/logout')
@@ -227,7 +168,7 @@ def render_admin():
         if not product_list:
           return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, no_items=True)
         return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, products=product_list)
-        
+
 #adding a category function
 @app.route('/add_category', methods = ['POST'])
 def add_category():

@@ -3,8 +3,9 @@
 {% block pageheading %}Clothing Database{% endblock %}
 
 {% block main %}
-<link href="/static/styles.css" rel="stylesheet" type="text/css">
-<h2 class="clothing-title">Available Clothing Items</h2>
+
+
+<h2 class="clothing-title">{{ title }}</h2>
 <div class="clothing-container">
     {% for item in clothing %}
     <div class="clothing-item">
@@ -15,5 +16,4 @@
     {% endfor %}
 </div>
 {% endblock %}
-
 
