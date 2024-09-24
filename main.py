@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, request
 import sqlite3
 from sqlite3 import Error
+from flask.sansio.scaffold import T_route
 from flask_bcrypt import Bcrypt
 from flask import session
 
@@ -139,55 +140,62 @@ def render_acessories():
             return render_template('acessories.html', clothing=[], message="No acessories found.")
     else:
         return "Error"
+
+
 @app.route('/login.html', methods=['POST', 'GET'])
 def render_login_page():
     con = create_connection(DATABASE)
     if con:
+        # Check if the user is already logged in
         if is_logged_in():
             first_name = session.get('firstname', 'User')
-            return redirect(f'/welcome?name={first_name}')  # Redirect to welcome page
+            return redirect(f'/welcome?name={first_name}')  
 
+        # Handle login POST request
         if request.method == 'POST':
-            email = request.form['email'].strip().lower()
-            password = request.form['password'].strip()
+            email = request.form.get('email').strip().lower()  # make sure email is lowercase
+            password = request.form.get('password')
 
-            query = "SELECT id, first_name, password FROM user WHERE email =?"
+            if not email or not password:
+                return redirect("/login.html?error=Missing+email+or+password")
+
+            # Query to get user by email
+            query = "SELECT id, first_name, password FROM user WHERE email = ?"
             cur = con.cursor()
             cur.execute(query, (email,))
             user_data = cur.fetchone()
 
-            con.close()
-
             if user_data is None:
                 return redirect("/login.html?error=Email+invalid+or+password+incorrect")
 
-            try:
-                user_id = user_data[0]
-                first_name = user_data[1]
-                db_password = user_data[2]
-            except IndexError:
-                return redirect("/login.html?error=Email+invalid+or+password+incorrect")
+            user_id = user_data[0]
+            first_name = user_data[1]
+            db_password = user_data[2]  #  hashed password from the database
 
             if not bcrypt.check_password_hash(db_password, password):
                 return redirect("/login.html?error=Email+invalid+or+password+incorrect")
 
+            # Set session data
             session['email'] = email
             session['user_id'] = user_id
             session['firstname'] = first_name
 
-            return redirect(f'/welcome?name={first_name}')  # Redirect to welcome page
+            return redirect(f'/welcome?name={first_name}')  # redirect to welcome page 
 
+        # If GET request, show login page
         error = request.args.get('error')
         return render_template('login.html', logged_in=is_logged_in(), error=error)
     else:
         return "Error connecting to the database."
+
+
+
 
 #chat gpt assisted me with this idea of a welcome page
 @app.route('/welcome')
 def welcome():
     first_name = request.args.get('name', 'Guest')  # Get the first name from query parameters
     return render_template('welcome.html', name=first_name)
-
 
 
 @app.route('/logout') #logout function
@@ -197,8 +205,6 @@ def logout():
   print(list(session.keys()))
   return render_template('login.html')
   
-
-
 @app.route('/signup', methods = ['POST', 'GET'])
 def render_signup_page():
   con = create_connection(DATABASE)
@@ -217,7 +223,7 @@ def render_signup_page():
       cur = con.cursor()
   
       try:
-        cur.execute(query, (fname, lname, email, hashed_password)) #this line actually executes the query
+        cur.execute(query, (fname, lname, email, hashed_password)) #execute the query
       except sqlite3.IntegrityError:
         con.close()
         return redirect('/signup?error=Email+is+already+used')
@@ -241,47 +247,49 @@ def is_logged_in():
 #admin section
 @app.route('/admin')
 def render_admin():
-  if not is_logged_in():
-    return redirect('/message=Need+to+be+logged+in.')
-  con = create_connection(DATABASE)
-  if con:
-    #fetch the categories
-    query = "SELECT * FROM clothing_category"
-    cur = con.cursor()
-    cur.execute(query)
-    category_list = cur.fetchall()
-
-    #fetch the products
-    query = "SELECT * FROM clothing_data"
-    cur.execute(query)
-    product_list = cur.fetchall()
-    print(product_list)
-
-    con.close()
-
-    if not product_list:
-      return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, no_items=True)
-    return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, products=product_list)
-
-
-#adding a category function
-@app.route('/add_category', methods = ['POST'])
-def add_category():
-  if not is_logged_in():
-    return redirect('/message=Need+to+be+logged+in.')
-  if request.method == "POST":
-    print(request.form)
-    cat_name = request.form.get('name')
-    print(cat_name)
+    if not is_logged_in():
+        return redirect('/message=Need+to+be+logged+in.')
     con = create_connection(DATABASE)
     if con:
-      query = "INSERT INTO clothing_category (name) VALUES (?)"
-      cur = con.cursor()
-      cur.execute(query, (cat_name, ))
-      con.commit()
-      con.close()
-    return redirect('/admin')
+        #fetch the categories
+        query = "SELECT * FROM clothing_catergory"
+        cur = con.cursor()
+        cur.execute(query)
+        category_list = cur.fetchall()
+    
+        #fetch the products
+        query = "SELECT * FROM clothing_data"
+        cur.execute(query)
+        product_list = cur.fetchall()
+        print(product_list)
+    
+        con.close()
+    
+        if not product_list:
+          return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, no_items=True)
+        return render_template("admin.html", logged_in=is_logged_in(), categories=category_list, products=product_list)
 
+
+@app.route('/add_item', methods=['POST'])
+def render_add_item():
+    if not is_logged_in():
+        return redirect('/message=Need+to+be+logged+in.')
+
+    if request.method == "POST":
+        item_name = request.form.get('name')
+        item_colours = request.form.get('main_colours')
+        item_price = request.form.get('price')
+        cat_id = request.form.get('cat_id')  # Get the category ID from the form
+
+        con = create_connection(DATABASE)
+        if con:
+            query = "INSERT INTO clothing_data (name, main_colours, price, cat_id) VALUES (?, ?, ?, ?)"
+            cur = con.cursor()
+            cur.execute(query, (item_name, item_colours, item_price, cat_id))
+            con.commit()
+            con.close()
+
+        return redirect('/admin')
 
 #deleting a category function
 @app.route('/delete_category', methods = ['POST'])
@@ -307,33 +315,12 @@ def render_delete_category_confirm(cat_id):
     return redirect('/message=Need+to+be+logged+in.')
   con = create_connection(DATABASE)
   if con:
-    query = "DELETE FROM clothing_category WHERE id = ?"
+    query = "DELETE FROM clothing_catergory WHERE id = ?"
     cur = con.cursor()
     cur.execute(query, (cat_id, ))
     con.commit()
     con.close()
     return redirect("/admin")
-
-#adding an item 
-@app.route('/add_item', methods = ['POST'])
-def render_add_item():
-  con = create_connection(DATABASE)
-  if con:
-    if not is_logged_in():
-      return redirect('/message=Need+to+be+logged+in.')
-    if request.method == "POST":
-      print(request.form)
-      item_name = request.form.get('name')
-      item_colours = request.form.get('main_colours')
-      item_price = request.form.get('price')
-
-      print(item_name, item_colours, item_price)
-      query = "INSERT INTO clothing_data (name, main_colours, price) VALUES (?, ?, ?)"
-      cur = con.cursor()
-      cur.execute(query, (item_name, item_colours, item_price))
-      con.commit()
-      con.close()
-    return redirect('/admin')
 
 
 #deleting a item function
